@@ -35,5 +35,7 @@
 * docker build -t modbuspal-builder .
 * docker run --name modbuspal-builder modbuspal-builder
 * docker cp modbuspal-builder:/usr/src/app/dist/ModbusPal.jar .
-* docker cp modbuspal-builder:/usr/src/app/dist/modbuspal-help.zip .
 * docker cp modbuspal-builder:/usr/src/app/dist/modbuspal-javadoc.zip .
+
+## Running ##
+Assuming the correct java version is installed and you have the ModBusPal and Jython Jar files, you can start modbuspal by double clicking start_modbuspal.bat
