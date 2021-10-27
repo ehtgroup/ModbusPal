@@ -3,39 +3,22 @@
 ## Prerequisites ##
 
 - Eclipse for Java Enterprise
-- Jython library from https://www.jython.org/download
+- JDK 8 (https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)
 
 ## Setup ##
 
-### Setup jfreechart ###
-* Fork and clone jfreechart library and checkout v1.5.x
-* Open Eclipse and add it to project workspace
-* Right click project, select Build Path > Configure Build Path
-  - Click Modulepath
-    - Add Library > Server Runtime > Tomcat 5.5
-    - Add Library > JRE System Library > JRE 16
-    - Add Library > JUnit > JUnit 5
-* Build project
-* Export jfreechart.jar
-
-### Setup ModbusPal ###
-
 * Fork and clone ModbusPal library
-* Add ModbusPal to Eclipse workspace
-* Right click the project, select Properties > Java Compiler
+* Open Eclipse and import existing project
+  - Select MobbusPal directory
+* Click Project > Properties > Java Compiler
   - Make sure Java Compiler is set to 1.8
-* Right click project, select Build Path > Configure Build Path
+* Click Project > Properties > Java Build Path > Libraries
   - Add Library > JRE System Library > JRE 8
-  - Add External Jar > jfreechart.jar exported from step 1
-  - Add External Jar > jython.jar
-* Remove RXTX libraries and re-add them from the src directory
-
-### Alternatively, you can build using Docker ###
-
-* docker build -t modbuspal-builder .
-* docker run --name modbuspal-builder modbuspal-builder
-* docker cp modbuspal-builder:/usr/src/app/dist/ModbusPal.jar .
-* docker cp modbuspal-builder:/usr/src/app/dist/modbuspal-javadoc.zip .
+  - You may setup the JRE here by clicking "Installed JREs..." and selecting the JDK installed in prereqs
+    - Typically after installing the JDK on Windows the JRE will be located under `C:\Program Files\Java\jdk1.8.0_202`
+* By now you should be good to compile by clicking Project > Build Project (Or if Automatically build is checked, it should have built already)
+* You can run the project by clicking Run > Run
+  - The first time you do this, you'll need to specify modbuspal.main.ModbusPalGui as the entrypoint in the Run Configuration
 
 ## Running ##
 Assuming the correct java version is installed and you have the ModBusPal and Jython Jar files, you can start modbuspal by double clicking start_modbuspal.bat
