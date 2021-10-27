@@ -285,7 +285,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
 
         installRecorder();
-        installCommPorts();
+        //installCommPorts();
         installScriptEngine();
         
         String initialLoadProjectFilePath = ModbusPalGui.getInitialLoadFilePath();
