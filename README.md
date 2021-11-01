@@ -1,7 +1,6 @@
 # ModbusPal #
 
 ## Prerequisites ##
-
 - Apache Netbeans
 
 ### Setup Project ###
@@ -17,3 +16,4 @@
 * docker run --name modbuspal-builder modbuspal-builder
 * docker cp modbuspal-builder:/usr/src/app/dist/ModbusPal.jar .
 * docker cp modbuspal-builder:/usr/src/app/dist/modbuspal-javadoc.zip .
+
