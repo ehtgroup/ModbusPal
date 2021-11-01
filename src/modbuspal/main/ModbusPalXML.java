@@ -20,8 +20,9 @@ public interface ModbusPalXML
     public static final String XML_SLAVE_IMPLEMENTATION_MODBUS_VALUE = "modbus";
     public static final String XML_SLAVE_IMPLEMENTATION_JBUS_VALUE = "j-bus";
 
-    /* REGISTER */
+    /* REGISTERS */
     public static final String XML_HOLDING_REGISTERS_TAG = "holding_registers";
+    public static final String XML_INPUT_REGISTERS_TAG = "input_registers";
     public static final String XML_ADDRESS_ATTRIBUTE = "address";
 
     /* COILS */
