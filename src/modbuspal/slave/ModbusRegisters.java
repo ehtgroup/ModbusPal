@@ -19,6 +19,7 @@ import modbuspal.binding.Binding;
 import modbuspal.link.ModbusSlaveProcessor;
 import modbuspal.main.ModbusConst;
 import static modbuspal.main.ModbusConst.FC_READ_HOLDING_REGISTERS;
+import static modbuspal.main.ModbusConst.FC_READ_INPUT_REGISTERS;
 import static modbuspal.main.ModbusConst.FC_READ_WRITE_MULTIPLE_REGISTERS;
 import static modbuspal.main.ModbusConst.FC_WRITE_MULTIPLE_REGISTERS;
 import static modbuspal.main.ModbusConst.FC_WRITE_SINGLE_REGISTER;
@@ -95,6 +96,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         switch( functionCode )
         {
             case FC_READ_HOLDING_REGISTERS: return processReadMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+            case FC_READ_INPUT_REGISTERS: return processReadMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
             case FC_WRITE_SINGLE_REGISTER: return processWriteSingleRegisterRequest(functionCode, buffer, offset, createIfNotExist);
             case FC_WRITE_MULTIPLE_REGISTERS: return processWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
             case FC_READ_WRITE_MULTIPLE_REGISTERS: return processReadWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
@@ -1319,7 +1321,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
             if( nodeName.compareTo(XML_ADDRESS_ATTRIBUTE)==0 )
             {
-                address = new Integer( attr.getNodeValue() );
+                address = new Integer( attr.getNodeValue() );                
             }
             else if( nodeName.compareTo("value")==0 )
             {

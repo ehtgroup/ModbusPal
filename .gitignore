@@ -17,3 +17,6 @@
 /doc/
 /out/
 
+/build/
+/dist/
+/lib/
