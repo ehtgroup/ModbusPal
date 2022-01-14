@@ -175,7 +175,7 @@ public abstract class ModbusPalProject2
     {
         // if the slave address in argument has no ip address
         // (MODBUS RTU flavor)...
-        if( id.getIpAddress()==null )
+        if( id != null && id.getIpAddress()==null )
         {
             return getMatchingRtuAddress(id);
         }

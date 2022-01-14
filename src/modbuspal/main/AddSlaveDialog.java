@@ -130,114 +130,7 @@ extends javax.swing.JDialog
             return output;
         }
         return null;
-    }
-    
-    
-    private int[] parseIpv4(String s)
-    {
-        Pattern ipv4Pattern = Pattern.compile("([\\d]{1,3})\\.([\\d]{1,3})\\.([\\d]{1,3})\\.([\\d]{1,3})");
-        Matcher m = ipv4Pattern.matcher(s);
-        if(m.find()==true)
-        {
-            String a = m.group(1);
-            String b = m.group(2);
-            String c = m.group(3);
-            String d = m.group(4);
-            
-            int[] output = new int[4];
-            
-            output[0] = Integer.parseInt(a);
-            output[1] = Integer.parseInt(b);
-            output[2] = Integer.parseInt(c);
-            output[3] = Integer.parseInt(d);
-            
-            if( (output[0]>255) || (output[1]>255) || (output[2]>255) || (output[3]>255) )
-            {
-                return null;
-            }
-            
-            return output;
-        }
-        return null;
-    }
-        
-    private List<ModbusSlaveAddress> tryParseIpAddress_1(String s)
-    {
-        StringBuilder sb = new StringBuilder();
-        
-        // part of the pattern that finds an ip v4 address
-        // (group 1)
-        sb.append("([\\d\\.]+)"); 
-        
-        // part of the pattern that finds the optionnal second ip v4 address.
-        // that second ip address defines a range for multiple slave creation.
-        // (group 2)
-        sb.append("(?:[\\s]*-[\\s]*([\\d\\.]+))?");
-        
-        // part of the pattern that finds the optionnal rtu address
-        // associated with the ip
-        // (group 3&4)
-        sb.append("(?:[\\s]*\\([\\s]*([\\d]+)[\\s]*\\))?");
-        
-        //Pattern p = Pattern.compile("([\\d\\.]+)(?:[\\s]*-[\\s]*([\\d\\.]+))?");
-        Pattern p = Pattern.compile(sb.toString());
-        Matcher m = p.matcher(s.trim());
-        if( m.find() )
-        {
-            int count = m.groupCount();
-            String firstIp = m.group(1);
-            String lastIp = m.group(2);
-            String rtuAddr = m.group(3);
-            int slaveAddress = -1;
-            
-            if( lastIp==null )
-            {
-                lastIp=firstIp;
-            }
-            
-            if(rtuAddr!=null)
-            {
-                try
-                {
-                    slaveAddress = Integer.parseInt(rtuAddr);
-                }
-                catch(NumberFormatException ex)
-                {
-                    slaveAddress=-1;
-                }
-            }
-            
-            int[] startIp = parseIpv4(firstIp);
-            int[] endIp = parseIpv4(lastIp);
-            ArrayList<ModbusSlaveAddress> output = new ArrayList<ModbusSlaveAddress>(count);
-            for(int a = startIp[0]; a<= endIp[0]; a++ )
-            {
-                for(int b = startIp[1]; b<= endIp[1]; b++ )
-                {
-                    for(int c = startIp[2]; c<= endIp[2]; c++ )
-                    {
-                        for(int d = startIp[3]; d<= endIp[3]; d++ )
-                        {   
-                            try 
-                            {
-                                byte[] ip = new byte[]{ (byte)a, (byte)b, (byte)c, (byte)d };
-                                InetAddress addr = Inet4Address.getByAddress(ip);
-                                ModbusSlaveAddress msa = new ModbusSlaveAddress(addr, slaveAddress);
-                                output.add(msa);
-                            } 
-                            catch (UnknownHostException ex) 
-                            {
-                                Logger.getLogger(AddSlaveDialog.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }   
-                    }   
-                } 
-            }
-            return output;
-        }
-        return null;
-    }
-    
+    }    
 
     private List<ModbusSlaveAddress> tryParseIpAddress_2(String s) throws UnknownHostException
     {
@@ -373,7 +266,7 @@ extends javax.swing.JDialog
                     msa = tryParseIpAddress_2(chunk);
                     if(msa==null)
                     {
-                        msa = tryParseIpAddress_1(chunk);
+                        msa = ModbusSlaveAddress.tryParseIpAddress_1(chunk);
                     }
                 }
 
