@@ -7,6 +7,7 @@ package modbuspal.slave;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -15,9 +16,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import modbuspal.automation.NullAutomation;
 import modbuspal.instanciator.InstantiableManager;
 import modbuspal.main.ModbusConst;
+import modbuspal.slave.ModbusSlaveAddress;
+import modbuspal.main.AddSlaveDialog;
 import static modbuspal.main.ModbusConst.FC_READ_COILS;
 import static modbuspal.main.ModbusConst.FC_READ_DISCRETE_INPUTS;
 import static modbuspal.main.ModbusConst.FC_READ_HOLDING_REGISTERS;
@@ -646,7 +651,8 @@ implements ModbusPalXML, ModbusConst
     {
         load(mpp, node,true);
     }
-
+    
+   
     /**
      * Overwrites the settings and values of this slave with those defined in 
      * the specified DOM node.
@@ -678,9 +684,10 @@ implements ModbusPalXML, ModbusConst
             	String id = XMLTools.getAttribute(XML_SLAVE_ID_ATTRIBUTE, node);
             	try 
             	{
-            		slaveId = new ModbusSlaveAddress( InetAddress.getByName( id ) );
+                        List<ModbusSlaveAddress> addresses =  ModbusSlaveAddress.tryParseIpAddress_1(id);
+                        slaveId = addresses.get(0);
             	} 
-            	catch (UnknownHostException exception) 
+            	catch (Exception exception) 
             	{
             		System.out.println( "Unknown host while loading Modbus Slave: " + id );
             	}
