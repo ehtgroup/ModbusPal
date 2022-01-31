@@ -36,77 +36,79 @@ public abstract class ModbusPalProject2
     // to a local network interface and no specified Rtu address would be ok.    
     private ModbusSlaveAddress getMatchingTcpAddress(ModbusSlaveAddress id)
     {
-        ModbusSlaveAddress bestMatch = null;
-        int matchRate = Integer.MAX_VALUE;
-        
-        Set<ModbusSlaveAddress> addresses = knownSlaves.keySet();
-        for(ModbusSlaveAddress address : addresses )
-        {
-            if(address.getIpAddress()==null)
-            {
-                if(address.getRtuAddress()==id.getRtuAddress())
-                {
-                    if( matchRate > 2 )
-                    {
-                        bestMatch = address;
-                        matchRate = 2;
-                    }
-                }
-            }
-            
-            else  if( address.getIpAddress().equals(id.getIpAddress()) == true )
-            {
-                // perfect IP address match. But now have to check the
-                // optional slave identifier.
-                if( address.getRtuAddress() == id.getRtuAddress() )
-                {
-                    if(matchRate > 1 )
-                    {
-                        bestMatch = address;
-                        matchRate = 1;
-                    }
-                }  
-                else if( address.getRtuAddress() == -1 )
-                {
-                    if(matchRate > 3)
-                    {
-                        bestMatch = address;
-                        matchRate = 3;
-                    }
-                }
-            }
-            
-            else
-            {
-                try 
-                {
-                    if( NetworkTools.isLocalAddress(address.getIpAddress())==true )
-                    {
-                        if( address.getRtuAddress() == id.getRtuAddress() )
-                        {
-                            if(matchRate > 4)
-                            {
-                                bestMatch=address;
-                                matchRate = 4;
-                            }
-                        }
-                        else if( address.getRtuAddress() == -1 )
-                        {
-                            if(matchRate > 5)
-                            {
-                                bestMatch = address;
-                                matchRate = 5;
-                            }
-                        }
-                    }
-                }
-                catch (SocketException ex) 
-                {
-                    Logger.getLogger(ModbusPalProject2.class.getName()).log(Level.SEVERE, null, ex);
-                }                
-            }
-        }
-        return bestMatch;
+        return id;
+
+//        ModbusSlaveAddress bestMatch = null;
+//        int matchRate = Integer.MAX_VALUE;
+//         
+//        Set<ModbusSlaveAddress> addresses = knownSlaves.keySet();
+//        for(ModbusSlaveAddress address : addresses )
+//        {
+//            if(address.getIpAddress()==null)
+//            {
+//                if(address.getRtuAddress()==id.getRtuAddress())
+//                {
+//                    if( matchRate > 2 )
+//                    {
+//                        bestMatch = address;
+//                        matchRate = 2;
+//                    }
+//                }
+//            }
+//            
+//            else  if( address.getIpAddress().equals(id.getIpAddress()) == true )
+//            {
+//                // perfect IP address match. But now have to check the
+//                // optional slave identifier.
+//                if( address.getRtuAddress() == id.getRtuAddress() )
+//                {
+//                    if(matchRate > 1 )
+//                    {
+//                        bestMatch = address;
+//                        matchRate = 1;
+//                    }
+//                }  
+//                else if( address.getRtuAddress() == -1 )
+//                {
+//                    if(matchRate > 3)
+//                    {
+//                        bestMatch = address;
+//                        matchRate = 3;
+//                    }
+//                }
+//            }
+//            
+//            else
+//            {
+//                try 
+//                {
+//                    if( NetworkTools.isLocalAddress(address.getIpAddress())==true )
+//                    {
+//                        if( address.getRtuAddress() == id.getRtuAddress() )
+//                        {
+//                            if(matchRate > 4)
+//                            {
+//                                bestMatch=address;
+//                                matchRate = 4;
+//                            }
+//                        }
+//                        else if( address.getRtuAddress() == -1 )
+//                        {
+//                            if(matchRate > 5)
+//                            {
+//                                bestMatch = address;
+//                                matchRate = 5;
+//                            }
+//                        }
+//                    }
+//                }
+//                catch (SocketException ex) 
+//                {
+//                    Logger.getLogger(ModbusPalProject2.class.getName()).log(Level.SEVERE, null, ex);
+//                }                
+//            }
+//        }
+//        return bestMatch;
 
     }
     
@@ -114,55 +116,56 @@ public abstract class ModbusPalProject2
     
     private ModbusSlaveAddress getMatchingRtuAddress(ModbusSlaveAddress id)
     {
-        ModbusSlaveAddress bestMatch = null;
-        int matchRate = Integer.MAX_VALUE;
-        
-        Set<ModbusSlaveAddress> addresses = knownSlaves.keySet();
-        for(ModbusSlaveAddress address : addresses )
-        {
-            if(address.getIpAddress()==null)
-            {
-                if(address.getRtuAddress()==id.getRtuAddress())
-                {
-                    if( matchRate > 1 )
-                    {
-                        bestMatch = address;
-                        matchRate = 1;
-                    }
-                }
-            }
-            
-            else
-            {
-                try 
-                {
-                    if( NetworkTools.isLocalAddress(address.getIpAddress())==true )
-                    {
-                        if( address.getRtuAddress() == id.getRtuAddress() )
-                        {
-                            if(matchRate > 2)
-                            {
-                                bestMatch=address;
-                                matchRate = 2;
-                            }
-                        }
-                        else if( address.getRtuAddress() == -1 )
-                        {
-                            if(matchRate > 3)
-                            {
-                                bestMatch = address;
-                                matchRate = 3;
-                            }
-                        }
-                    }
-                }
-                catch (SocketException ex) 
-                {
-                    Logger.getLogger(ModbusPalProject2.class.getName()).log(Level.SEVERE, null, ex);
-                }                
-            }
-        }
-        return bestMatch;        
+        return id;
+//        ModbusSlaveAddress bestMatch = null;
+//        int matchRate = Integer.MAX_VALUE;
+//        
+//        Set<ModbusSlaveAddress> addresses = knownSlaves.keySet();
+//        for(ModbusSlaveAddress address : addresses )
+//        {
+//            if(address.getIpAddress()==null)
+//            {
+//                if(address.getRtuAddress()==id.getRtuAddress())
+//                {
+//                    if( matchRate > 1 )
+//                    {
+//                        bestMatch = address;
+//                        matchRate = 1;
+//                    }
+//                }
+//            }
+//            
+//            else
+//            {
+//                try 
+//                {
+//                    if( NetworkTools.isLocalAddress(address.getIpAddress())==true )
+//                    {
+//                        if( address.getRtuAddress() == id.getRtuAddress() )
+//                        {
+//                            if(matchRate > 2)
+//                            {
+//                                bestMatch=address;
+//                                matchRate = 2;
+//                            }
+//                        }
+//                        else if( address.getRtuAddress() == -1 )
+//                        {
+//                            if(matchRate > 3)
+//                            {
+//                                bestMatch = address;
+//                                matchRate = 3;
+//                            }
+//                        }
+//                    }
+//                }
+//                catch (SocketException ex) 
+//                {
+//                    Logger.getLogger(ModbusPalProject2.class.getName()).log(Level.SEVERE, null, ex);
+//                }                
+//            }
+//        }
+//        return bestMatch;        
     }
     
     /**
