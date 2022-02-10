@@ -486,9 +486,16 @@ implements ModbusPalXML
             else
             {
             	slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE, parentSlave);
+                String slaveAddressParts[] = slaveAddress.split("\\(");
+                String slaveIp = slaveAddressParts[0];
+                int modbusAddr = -1;
+                if (slaveAddressParts.length > 1) {
+                    String modbusAddrParts[] = slaveAddressParts[1].split("\\)");
+                    modbusAddr = Integer.parseInt(modbusAddrParts[0]);
+                }
             	try 
             	{
-            		ModbusSlaveAddress msa = new ModbusSlaveAddress( InetAddress.getByName( slaveAddress ) );
+            		ModbusSlaveAddress msa = new ModbusSlaveAddress( InetAddress.getByName( slaveIp ), modbusAddr );
             		slave = getModbusSlave(msa);
             	} 
             	catch (UnknownHostException exception) 
@@ -498,14 +505,20 @@ implements ModbusPalXML
             }
         }
 
-        // bind the registers, coils, and the automation
-        if( isRegister )
-        {
-        	slave.getHoldingRegisters().bind(ioAddress, binding);
-        }
-        else 
-        {
-        	slave.getCoils().bind(ioAddress, binding);
+        if (slave != null) {
+            // bind the registers, coils, and the automation
+            if( isRegister )
+            {
+                if ("input_registers".equals(parentNode.getParentNode().getNodeName())) {
+                    slave.getInputRegisters().bind(ioAddress, binding);
+                } else {
+                    slave.getHoldingRegisters().bind(ioAddress, binding);
+                }
+            }
+            else 
+            {
+                    slave.getCoils().bind(ioAddress, binding);
+            }
         }
     }
 
