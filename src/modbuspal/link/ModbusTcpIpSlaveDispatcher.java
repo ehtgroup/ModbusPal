@@ -155,7 +155,7 @@ implements Runnable
                     ModbusTools.setUint16(buffer,4,pduLength+1);
 
                     // send all
-                    slaveOutput.write(buffer,0, 7+pduLength);
+                    slaveOutput.write(buffer, 0, 7 + pduLength);
                     slaveOutput.flush();
                 }
             }

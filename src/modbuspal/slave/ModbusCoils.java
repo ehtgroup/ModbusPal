@@ -283,6 +283,9 @@ extends ModbusRegisters
         for(int i=0; i<quantity; i++)
         {
             Integer reg = getValue(startingAddress+i);
+            if (i%8 == 0) {
+                buffer[offset + i/8] = 0;
+            }
             ModbusTools.setBit(buffer, (offset*8)+i, reg);
         }
         return XC_SUCCESSFUL;
