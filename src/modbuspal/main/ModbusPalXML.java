@@ -27,6 +27,7 @@ public interface ModbusPalXML
 
     /* COILS */
     public static final String XML_COILS_TAG = "coils";
+    public static final String XML_DISCRETE_INPUTS_TAG = "input_coils";
 
     /* FILES */
     public static final String XML_FILE_RELATIVE_PATH_TAG = "rel";

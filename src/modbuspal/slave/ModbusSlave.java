@@ -50,6 +50,7 @@ implements ModbusPalXML, ModbusConst
     private boolean enabled;
     private ModbusRegisters holdingRegisters = new ModbusRegisters();
     private ModbusRegisters inputRegisters = new ModbusRegisters();
+    private ModbusCoils discreteInputs = new ModbusCoils();
     private ModbusCoils coils = new ModbusCoils();
     private String customName;
     private ArrayList<ModbusSlaveListener> listeners = new ArrayList<ModbusSlaveListener>();
@@ -103,6 +104,7 @@ implements ModbusPalXML, ModbusConst
         holdingRegisters.clear();
         inputRegisters.clear();
         coils.clear();
+        discreteInputs.clear();
         clearFunctions();
         clearTuning();
     }
@@ -170,7 +172,7 @@ implements ModbusPalXML, ModbusConst
             setPduProcessor(i,null);
         }*/
         pduProcessors[FC_READ_COILS] = coils;
-        pduProcessors[FC_READ_DISCRETE_INPUTS] = coils;
+        pduProcessors[FC_READ_DISCRETE_INPUTS] = discreteInputs;
         pduProcessors[FC_READ_HOLDING_REGISTERS] = holdingRegisters;
         pduProcessors[FC_READ_INPUT_REGISTERS] = inputRegisters;
         pduProcessors[FC_WRITE_SINGLE_COIL] = coils;
@@ -356,6 +358,15 @@ implements ModbusPalXML, ModbusConst
     {
         return coils;
     }
+    
+    /**
+     * Returns the object that stores the coils for this modbus slave.
+     * @return the object that stores the coils for this modbus slave.
+     */
+    public ModbusCoils getDiscreteInputs()
+    {
+        return discreteInputs;
+    }
 
     /**
      * Gets the implementation defined for this slave.
@@ -386,6 +397,14 @@ implements ModbusPalXML, ModbusConst
 
         // get the names of the automations that are required for
         // the binding in coils:
+        tmpNames = inputRegisters.getRequiredAutomations();
+        // remove the names of the bindings that are already in the final list:
+        tmpNames.removeAll(automationNames);
+        // add the rest to the final list:
+        automationNames.addAll(tmpNames);
+
+        // get the names of the automations that are required for
+        // the binding in coils:
         tmpNames = coils.getRequiredAutomations();
         // remove the names of the bindings that are already in the final list:
         tmpNames.removeAll(automationNames);
@@ -393,13 +412,13 @@ implements ModbusPalXML, ModbusConst
         automationNames.addAll(tmpNames);
         
         // get the names of the automations that are required for
-        // the binding in coils:
-        tmpNames = inputRegisters.getRequiredAutomations();
+        // the binding in discrete inputs:
+        tmpNames = discreteInputs.getRequiredAutomations();
         // remove the names of the bindings that are already in the final list:
         tmpNames.removeAll(automationNames);
         // add the rest to the final list:
         automationNames.addAll(tmpNames);
-
+        
         // remove name of Null automation:
         automationNames.remove(NullAutomation.NAME);
 
@@ -413,6 +432,7 @@ implements ModbusPalXML, ModbusConst
         retval |= inputRegisters.hasBindings();
         retval |= holdingRegisters.hasBindings();
         retval |= coils.hasBindings();
+        retval |= discreteInputs.hasBindings();
         return retval;
     }
 
@@ -427,6 +447,7 @@ implements ModbusPalXML, ModbusConst
         holdingRegisters.removeAllBindings(classname);
         inputRegisters.removeAllBindings(classname);
         coils.removeAllBindings(classname);
+        discreteInputs.removeAllBindings(classname);
     }
 
     private void loadHoldingRegisters(Node node)
@@ -455,6 +476,15 @@ implements ModbusPalXML, ModbusConst
             return;
         }
         coils.load(node);
+    }
+
+    private void loadDiscreteInputs(Node node)
+    {
+        if( node == null )
+        {
+            return;
+        }
+        discreteInputs.load(node);
     }
 
     private void loadFunctions(
@@ -550,6 +580,18 @@ implements ModbusPalXML, ModbusConst
         coils.save(out, withBindings);
 
         String closeTag = "</"+XML_COILS_TAG+">\r\n";
+        out.write( closeTag.getBytes() );
+    }
+
+    private void saveDiscreteInputs(OutputStream out, boolean withBindings)
+    throws IOException
+    {
+        String openTag = "<"+XML_DISCRETE_INPUTS_TAG+">\r\n";
+        out.write( openTag.getBytes() );
+
+        discreteInputs.save(out, withBindings);
+
+        String closeTag = "</"+XML_DISCRETE_INPUTS_TAG+">\r\n";
         out.write( closeTag.getBytes() );
     }
 
@@ -738,6 +780,13 @@ implements ModbusPalXML, ModbusConst
         loadCoils(coilsNode);
 
         //
+        // load coils
+        //
+
+        Node discreteInputsNode = XMLTools.getNode(nodes, XML_DISCRETE_INPUTS_TAG);
+        loadDiscreteInputs(discreteInputsNode);
+
+        //
         // ensure compatibility with old format:
         //
 
@@ -826,6 +875,7 @@ implements ModbusPalXML, ModbusConst
         saveHoldingRegisters(out, withBindings);
         saveInputRegisters(out, withBindings);
         saveCoils(out,withBindings);
+        saveDiscreteInputs(out,withBindings);
         saveFunctions(out);
         saveTuning(out);
         
@@ -893,11 +943,13 @@ implements ModbusPalXML, ModbusConst
                 holdingRegisters.setOffset(1);
                 inputRegisters.setOffset(1);
                 coils.setOffset(1);
+                discreteInputs.setOffset(1);
                 break;
             case IMPLEMENTATION_JBUS:
                 holdingRegisters.setOffset(0);
                 inputRegisters.setOffset(0);
                 coils.setOffset(0);
+                discreteInputs.setOffset(0);
                 break;
         }
         notifyModbusImplChanged();
