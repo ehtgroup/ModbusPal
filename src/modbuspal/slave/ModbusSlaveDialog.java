@@ -67,6 +67,7 @@ implements ModbusConst, ModbusSlaveListener
         holdingRegistersPanel.add(new ModbusRegistersPanel(this, modbusSlave.getHoldingRegisters()),BorderLayout.CENTER);
         inputRegistersPanel.add(new ModbusRegistersPanel(this, modbusSlave.getInputRegisters()),BorderLayout.CENTER);
         coilsPanel.add(new ModbusCoilsPanel(this, modbusSlave.getCoils()),BorderLayout.CENTER);
+        discreteInputsPanel.add(new ModbusCoilsPanel(this, modbusSlave.getDiscreteInputs()),BorderLayout.CENTER);
         functionsPanel.add( new ModbusFunctionsPanel(this,modbusPalProject.getFunctionFactory()),BorderLayout.CENTER);
 
         // add function tabs for user defined functions
@@ -179,6 +180,7 @@ implements ModbusConst, ModbusSlaveListener
         holdingRegistersPanel = new javax.swing.JPanel();
         inputRegistersPanel = new javax.swing.JPanel();
         coilsPanel = new javax.swing.JPanel();
+        discreteInputsPanel = new javax.swing.JPanel();
         functionsPanel = new javax.swing.JPanel();
         tuningPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -203,6 +205,8 @@ implements ModbusConst, ModbusSlaveListener
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        jTabbedPane1.setPreferredSize(new java.awt.Dimension(440, 330));
+
         holdingRegistersPanel.setPreferredSize(new java.awt.Dimension(400, 300));
         holdingRegistersPanel.setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Holding registers", holdingRegistersPanel);
@@ -212,6 +216,9 @@ implements ModbusConst, ModbusSlaveListener
 
         coilsPanel.setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Coils", coilsPanel);
+
+        discreteInputsPanel.setLayout(new java.awt.BorderLayout());
+        jTabbedPane1.addTab("Input Coils", discreteInputsPanel);
 
         functionsPanel.setPreferredSize(new java.awt.Dimension(400, 300));
         functionsPanel.setLayout(new java.awt.BorderLayout());
@@ -297,7 +304,8 @@ implements ModbusConst, ModbusSlaveListener
 
         jTabbedPane1.addTab("Tuning", tuningPanel);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.LINE_END);
+        jTabbedPane1.getAccessibleContext().setAccessibleDescription("");
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -456,9 +464,9 @@ implements ModbusConst, ModbusSlaveListener
         noReplyRateValidate();
     }//GEN-LAST:event_noReplyRateSliderStateChanged
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel coilsPanel;
+    private javax.swing.JPanel discreteInputsPanel;
     private javax.swing.JButton exportButton;
     private javax.swing.JPanel functionsPanel;
     private javax.swing.JPanel holdingRegistersPanel;
