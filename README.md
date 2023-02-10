@@ -13,4 +13,4 @@
 ### Build Jar ###
 
 1. Build Project (click hammer or F11)
-1. Jar will be in ModbusPal/dist
+1. Jar will be in <ProjectFolder>/dist
