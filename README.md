@@ -9,3 +9,8 @@
 1. Download and install netbeans https://netbeans.apache.org/download/index.html
 1. Open Netbeans and select `tools > options > Java > ant` and add the ivy jar to the classpath
 1. Run project
+
+### Build Jar ###
+
+1. Build Project (click hammer or F11)
+1. Jar will be in ModbusPal/dist
