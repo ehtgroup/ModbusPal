@@ -5,7 +5,9 @@
 
 package modbuspal.main;
 
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -23,6 +25,10 @@ import modbuspal.toolkit.NetworkTools;
 public abstract class ModbusPalProject2
 {
     final private HashMap<ModbusSlaveAddress, ModbusSlave> knownSlaves = new HashMap<ModbusSlaveAddress, ModbusSlave>();
+    // any requests for a slave is assumed to be forwarded to localhost
+    // so if the destination ip is a docker container then we can just
+    // ignore whatever the container ip is   
+    public boolean forwardToLocalHost = true;
 
     // The MODBUS ADDRESS we are trying to match has an InetAddress.
     // 1/ A perfect match would be a MODBUS ADDRESS with the same InetAddress
@@ -204,6 +210,15 @@ public abstract class ModbusPalProject2
     {
         synchronized(knownSlaves)
         {
+            if (forwardToLocalHost) {
+                try {
+                    InetAddress i = InetAddress.getLocalHost();
+                    id.setIpAddress(i);                
+                }
+                catch (UnknownHostException e) {
+                    System.out.println("Could not create localhost addr");
+                }
+            }
             ModbusSlaveAddress matchedId = getMatchingSlaveAddress(id);
             if( (matchedId!=null) && (knownSlaves.get(matchedId)!=null) )
             {

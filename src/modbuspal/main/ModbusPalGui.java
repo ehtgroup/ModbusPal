@@ -12,7 +12,10 @@
 package modbuspal.main;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
@@ -22,7 +25,12 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import javax.xml.parsers.ParserConfigurationException;
+import modbuspal.automation.Automation;
+import modbuspal.automation.AutomationPanel;
 import modbuspal.link.ModbusSerialLink;
+import modbuspal.link.ModbusTcpIpLink;
+import org.xml.sax.SAXException;
 
 /**
  * Utilitary methods for creating new instances of ModbusPal
@@ -35,7 +43,8 @@ public class ModbusPalGui
     public static final int MAX_PORT_NUMBER = 65536;
     
     private static String initialLoadFilePath = "";
-    private static int initialPortNumber = -1;
+    private static ModbusPalProject modbusPalProject = null;
+    private static int initialPortNumber = -1;    
     
     /**
      * This method will display the help message to the console and exit the software.
@@ -79,6 +88,45 @@ public class ModbusPalGui
     {
     	return initialPortNumber;
     }
+    
+    public static void startAllAutomations()
+    {
+        System.out.printf("[%s] Start all automations\r\n", modbusPalProject.getName());
+        Automation automations[] = modbusPalProject.getAutomations();
+        for(int i=0; i<automations.length; i++)
+        {
+            automations[i].start();
+        }
+    }
+    
+    public static void startAll()
+    {
+        System.out.printf("[%s] Start everything\r\n",modbusPalProject.getName());
+        startAllAutomations();
+        startTcpIpLink();
+    }
+    
+        /**
+     * Starts the currently selected link, as if the user has clicked
+     * on the "Run" button.
+     */
+    private static void startTcpIpLink()
+    {
+        int port = 502;
+        try
+        {
+            System.out.printf("[%s] Start TCP/link (port=%d)\r\n", modbusPalProject.getName(), port);
+            ModbusTcpIpLink currentLink = new ModbusTcpIpLink(modbusPalProject, port);
+            currentLink.start();
+        }
+        catch (Exception ex)
+        {
+            System.out.println("TCP/IP error");
+            System.out.println("The following exception occured:" + ex.getClass().getSimpleName() + "\r\n");
+            System.out.println("Message:"+ex.getLocalizedMessage());
+        }
+    }
+    
 
     /**
      * this method will try to change the Look and Feel of the application,
@@ -110,9 +158,12 @@ public class ModbusPalGui
     {
         boolean runInstall = false;
         boolean runGui = true;
+        boolean showUI = true;
+        
         String installArgFlag = "-install";
         String loadFileArgFlag = "-loadFile=";
         String portNumberArgFlag = "-portNumber=";
+        String hideArgFlag  = "-hide";
         
         if( args.length >= 1 )
         {
@@ -121,6 +172,11 @@ public class ModbusPalGui
                 if( arg.startsWith( installArgFlag ) )
                 {
                     runInstall = true;
+                    runGui = false;
+                }
+                else if( arg.startsWith( hideArgFlag ) )
+                {
+                    showUI = false;
                     runGui = false;
                 }
                 else if( arg.startsWith( loadFileArgFlag ) )
@@ -153,6 +209,31 @@ public class ModbusPalGui
                     newFrame().setVisible(true);
                 }
             });
+        }
+        else if (showUI == false) {
+            String initialLoadProjectFilePath = ModbusPalGui.getInitialLoadFilePath();
+            File fileCheck = new File( initialLoadProjectFilePath );
+            if( initialLoadProjectFilePath != "" && fileCheck.isFile() )
+            {
+                try
+                {
+                    System.out.println( "Loading the project file: " + initialLoadProjectFilePath );
+                    modbusPalProject = loadProject( initialLoadProjectFilePath );
+                    startAll();
+                    while (true) 
+                    {
+                        Thread.sleep(1000);
+                    }
+                }
+                catch( Exception exception )
+                {
+                    System.out.println(exception.toString());
+                    exception.printStackTrace();
+                    System.out.println(
+                            "Could not load the initial project file path \"" + initialLoadProjectFilePath + "\"." );
+                    System.out.println( "Check the path you inputted into the command line arguments." );
+                }
+            }
         }
     }
 
@@ -245,6 +326,21 @@ public class ModbusPalGui
             setIconImage(image2);
         }
     }
+    
+    public static ModbusPalProject loadProject(String path)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        File projectFile = new File(path);
+        return loadProject(projectFile);
+    }
+    
+    public static ModbusPalProject loadProject(File projectFile)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        ModbusPalProject mpp = ModbusPalProject.load(projectFile);  
+        return mpp;
+    }    
+   
 
 
     /**

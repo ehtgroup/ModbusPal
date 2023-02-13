@@ -67,8 +67,7 @@ implements ModbusPalXML
     int linkSerialStopBits = ModbusSerialLink.STOP_BITS_1;
     boolean linkSerialXonXoff = false;
     boolean linkSerialRtsCts = false;
-    File linkReplayFile = null;
-    
+    File linkReplayFile = null;  
     
     //==========================================================================
     //
@@ -1486,12 +1485,8 @@ implements ModbusPalXML
      */
     public boolean isSlaveEnabled(ModbusSlaveAddress slaveID)
     {
-        /*if( (slaveID<0) || (slaveID>=ModbusConst.MAX_MODBUS_SLAVE) )
-        {
-            return false;
-        }*/
-
-        ModbusSlave ms = getModbusSlave(slaveID,learnModeEnabled);
+        ModbusSlave ms = null;      
+        ms = getModbusSlave(slaveID,learnModeEnabled);
         if( ms!=null )
         {
             return ms.isEnabled();
