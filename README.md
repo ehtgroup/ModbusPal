@@ -14,3 +14,13 @@
 
 1. Build Project (click hammer or F11)
 1. Jar will be in [ProjectFolder]/dist
+
+### Run without UI ###
+
+You can start ModbusPal without showing the UI elements so it can run in a headless environment,
+or if you just don't care to open the window with the -hide flag. You can use it in conjuction
+with a project file to make modbuspal start all automations and start listening for requests using the command:
+```
+java -jar <<pathtojar>>/ModbusPal.jar -loadFile=<<projectfile>> -hide
+```
+Only works with TCP/IP over port 502 currently. You also need to have all your slaves listening on localhost.
