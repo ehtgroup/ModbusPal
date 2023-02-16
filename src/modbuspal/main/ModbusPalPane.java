@@ -315,6 +315,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
                     }
                 }
                 runToggleButton.doClick();
+                learnToggleButton.doClick();
             }
             catch( Exception exception )
             {

@@ -57,6 +57,13 @@ implements ModbusLink, Runnable
         listener = l;
         serverThread.start();
     }
+    
+    public void start()
+    {
+        executeThread = true;
+        serverThread = new Thread(this,"tcp/ip link");
+        serverThread.start();
+    }
 
     @Override
     public void stop()
@@ -126,7 +133,10 @@ implements ModbusLink, Runnable
         serverSocket = null;
         
         System.out.println("Stop ModbusTcpIpLink");
-        listener.linkBroken();
+        if (listener != null) 
+        {
+            listener.linkBroken();
+        }        
         listener = null;
     }
     
@@ -171,6 +181,9 @@ implements ModbusLink, Runnable
         Socket sock = clientSockets.get(dst);
         if( sock == null )
         {
+            System.out.println("STARTING TCP LINK:");
+            System.out.println("IP Address: " + dst.getIpAddress());
+            System.out.println("Port: " + tcpPort);
             sock = new Socket(dst.getIpAddress(), tcpPort);
             clientSockets.put(dst, sock);
         }
