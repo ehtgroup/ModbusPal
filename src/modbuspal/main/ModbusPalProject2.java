@@ -28,7 +28,7 @@ public abstract class ModbusPalProject2
     // any requests for a slave is assumed to be forwarded to localhost
     // so if the destination ip is a docker container then we can just
     // ignore whatever the container ip is   
-    public boolean forwardToLocalHost = true;
+    public boolean forwardToLocalHost = false;
 
     // The MODBUS ADDRESS we are trying to match has an InetAddress.
     // 1/ A perfect match would be a MODBUS ADDRESS with the same InetAddress

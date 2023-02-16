@@ -219,6 +219,7 @@ public class ModbusPalGui
                 {
                     System.out.println( "Loading the project file: " + initialLoadProjectFilePath );
                     modbusPalProject = loadProject( initialLoadProjectFilePath );
+                    modbusPalProject.forwardToLocalHost = true;
                     startAll();
                     while (true) 
                     {
