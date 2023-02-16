@@ -100,6 +100,19 @@ implements ModbusPalXML
         return project;
     }
 
+    public static ModbusPalProject load(File source, boolean forwardToLocalHost)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        // the parse will fail if xml doc doesn't match the dtd.
+        Document doc = XMLTools.ParseXML(source);
+
+        // normalize text representation
+        doc.getDocumentElement().normalize();
+
+        ModbusPalProject project = new ModbusPalProject(doc, source, forwardToLocalHost);
+        return project;
+    }
+
 
 
     public ModbusPalProject()
@@ -116,7 +129,57 @@ implements ModbusPalXML
     throws InstantiationException, IllegalAccessException
     {
         this();
+        // get the root node
+        String name = doc.getDocumentElement().getNodeName();
+        System.out.println("load "+name);
+        projectFile = source;
 
+        // scan the content of the xml file
+        // and load the script files (ScriptRunner objects are created)
+        loadScripts(doc, projectFile);
+
+        // execute startup scripts
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_BEFORE_INIT ) {
+                runner.execute();
+            }
+        }
+
+        loadParameters(doc);
+
+        // load old fashioned "bindings" instantiators
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_OLD_BINDINGS ) {
+                importOldBindings(runner);
+            }
+        }
+
+        // load old fashioned "generators" isntanciators
+        // load old fashioned "bindings" instantiators
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_OLD_GENERATORS ) {
+                importOldGenerators(runner);
+            }
+        }
+        
+        loadAutomations(doc);
+        loadSlaves(doc);
+        loadBindings(doc,null);
+        
+        // execute startup scripts
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_AFTER_INIT ) {
+                runner.execute();
+            }
+        }
+    }
+
+    
+    private ModbusPalProject(Document doc, File source, boolean forwardToLocalHost)
+    throws InstantiationException, IllegalAccessException
+    {
+        this();
+        this.forwardToLocalHost = forwardToLocalHost;
         // get the root node
         String name = doc.getDocumentElement().getNodeName();
         System.out.println("load "+name);
