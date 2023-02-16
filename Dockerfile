@@ -34,8 +34,7 @@ RUN ant jar -lib ../apache-ivy-2.5.1/ivy-2.5.1.jar
 
 
 WORKDIR /usr/src/app/
-RUN ls /usr/src/app/dist/
-CMD java -jar /usr/src/app/dist/ModbusPal.jar -loadFile=/usr/src/app/TestFacility.xmpp -hide
+
 
 
 
