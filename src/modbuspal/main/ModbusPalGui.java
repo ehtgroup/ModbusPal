@@ -338,7 +338,7 @@ public class ModbusPalGui
     public static ModbusPalProject loadProject(File projectFile)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
-        ModbusPalProject mpp = ModbusPalProject.load(projectFile);  
+        ModbusPalProject mpp = ModbusPalProject.load(projectFile, true);  
         return mpp;
     }    
    
