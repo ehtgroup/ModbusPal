@@ -113,6 +113,15 @@ public class ModbusPalGui
     private static void startTcpIpLink()
     {
         int port = 502;
+        String strPort = modbusPalProject.linkTcpipPort;
+        try 
+        {
+            port = Integer.parseInt(strPort);
+        } 
+        catch (NumberFormatException e) 
+        {
+            System.out.println("invalid port set, defaulting to 502");
+        }
         try
         {
             System.out.printf("[%s] Start TCP/link (port=%d)\r\n", modbusPalProject.getName(), port);
