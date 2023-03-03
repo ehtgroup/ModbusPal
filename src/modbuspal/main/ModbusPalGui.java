@@ -168,11 +168,13 @@ public class ModbusPalGui
         boolean runInstall = false;
         boolean runGui = true;
         boolean showUI = true;
+        boolean enableLearn = false;
         
         String installArgFlag = "-install";
         String loadFileArgFlag = "-loadFile=";
         String portNumberArgFlag = "-portNumber=";
         String hideArgFlag  = "-hide";
+        String enableLearnFlag  = "-learn";
         
         if( args.length >= 1 )
         {
@@ -196,6 +198,10 @@ public class ModbusPalGui
                 {
                 	String portNumberString = arg.substring( arg.lastIndexOf( portNumberArgFlag ) + portNumberArgFlag.length() );
                 	initialPortNumber = Integer.valueOf( portNumberString ).intValue();
+                }
+                else if( arg.startsWith( enableLearnFlag ) )
+                {
+                	enableLearn = true;
                 }
                 else
                 {
@@ -229,6 +235,7 @@ public class ModbusPalGui
                     System.out.println( "Loading the project file: " + initialLoadProjectFilePath );
                     modbusPalProject = loadProject( initialLoadProjectFilePath );
                     modbusPalProject.forwardToLocalHost = true;
+                    modbusPalProject.setLearnModeEnabled(enableLearn);
                     startAll();
                     while (true) 
                     {
