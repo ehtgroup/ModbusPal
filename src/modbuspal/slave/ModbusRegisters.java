@@ -16,6 +16,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import modbuspal.binding.Binding;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.link.ModbusSlaveProcessor;
 import modbuspal.main.ModbusConst;
 import static modbuspal.main.ModbusConst.FC_READ_HOLDING_REGISTERS;
@@ -30,6 +31,7 @@ import modbuspal.main.ModbusValuesMap;
 import modbuspal.main.ModbusPalXML;
 import modbuspal.master.ModbusMasterRequest;
 import modbuspal.toolkit.ModbusTools;
+import modbuspal.main.ModbusPalProject;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -41,7 +43,6 @@ import org.w3c.dom.NodeList;
 public class ModbusRegisters
 implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 {
-
     class RegisterCopy
     {
         int registerAddress;
@@ -83,7 +84,8 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     private ArrayList<TableModelListener> tableModelListeners = new ArrayList<TableModelListener>();
     private HashMap<Integer,Binding> bindings = new HashMap<Integer,Binding>(65536);
     private int addressOffset = 1;
-
+    protected ModbusPalProject ModbusPalProjectInst = null;
+    
     //==========================================================================
     //
     // PDU PROCESSOR
@@ -93,15 +95,41 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     @Override
     public int processPDU(byte functionCode, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist)
     {
-        switch( functionCode )
-        {
-            case FC_READ_HOLDING_REGISTERS: return processReadMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_READ_INPUT_REGISTERS: return processReadMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_WRITE_SINGLE_REGISTER: return processWriteSingleRegisterRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_WRITE_MULTIPLE_REGISTERS: return processWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_READ_WRITE_MULTIPLE_REGISTERS: return processReadWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+        int overrideRet = -1;
+        if (ModbusPalProjectInst != null) {
+            InstantiableManager<ModbusPduProcessor> inst = null;
+            ModbusPduProcessor mspp = null;
+
+            inst = ModbusPalProjectInst.getFunctionFactory();
+            try {
+                mspp = inst.newInstance("PDUOverrides");
+               
+                if (mspp != null) {
+                    overrideRet = mspp.processPDU(functionCode, slaveID, buffer, offset, createIfNotExist);
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
         }
-        return -1;
+        
+        if (overrideRet != -1) {
+            return overrideRet;
+            
+        } else {
+            switch( functionCode )
+            {
+                case FC_READ_HOLDING_REGISTERS: return processReadMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+                case FC_READ_INPUT_REGISTERS: return processReadMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+                case FC_WRITE_SINGLE_REGISTER: return processWriteSingleRegisterRequest(functionCode, buffer, offset, createIfNotExist);
+                case FC_WRITE_MULTIPLE_REGISTERS: return processWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+                case FC_READ_WRITE_MULTIPLE_REGISTERS: return processReadWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+            }
+            return -1;
+        }
+    }
+    
+    public void setModbusPalProjectInst(ModbusPalProject mpp) {
+        ModbusPalProjectInst = mpp;
     }
 
     @Override
@@ -461,7 +489,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         {
             return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
-
+        
         if( exist(startingAddress,quantity,createIfNotExist) == false )
         {
             return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
