@@ -6,6 +6,7 @@
 package modbuspal.slave;
 
 import modbuspal.binding.Binding;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.link.ModbusSlaveProcessor;
 import static modbuspal.main.ModbusConst.FC_READ_COILS;
 import static modbuspal.main.ModbusConst.FC_READ_DISCRETE_INPUTS;
@@ -36,14 +37,36 @@ extends ModbusRegisters
     @Override
     public int processPDU(byte functionCode, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist)
     {
-        switch( functionCode )
-        {
-            case FC_READ_COILS: return processReadMultipleCoilsRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_READ_DISCRETE_INPUTS: return processReadMultipleCoilsRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_WRITE_SINGLE_COIL: return processWriteSingleCoilRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_WRITE_MULTIPLE_COILS: return processWriteMultipleCoilsRequest(functionCode, buffer, offset, createIfNotExist);
+        int overrideRet = -1;
+        if (ModbusPalProjectInst != null) {
+            InstantiableManager<ModbusPduProcessor> inst = null;
+            ModbusPduProcessor mspp = null;
+
+            inst = ModbusPalProjectInst.getFunctionFactory();
+            try {
+                mspp = inst.newInstance("PDUOverrides");
+               
+                if (mspp != null) {
+                    overrideRet = mspp.processPDU(functionCode, slaveID, buffer, offset, createIfNotExist);
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
         }
-        return -1;
+        
+        if (overrideRet != -1) {
+            return overrideRet;
+            
+        } else {
+            switch( functionCode )
+            {
+                case FC_READ_COILS: return processReadMultipleCoilsRequest(functionCode, buffer, offset, createIfNotExist);
+                case FC_READ_DISCRETE_INPUTS: return processReadMultipleCoilsRequest(functionCode, buffer, offset, createIfNotExist);
+                case FC_WRITE_SINGLE_COIL: return processWriteSingleCoilRequest(functionCode, buffer, offset, createIfNotExist);
+                case FC_WRITE_MULTIPLE_COILS: return processWriteMultipleCoilsRequest(functionCode, buffer, offset, createIfNotExist);
+            }
+            return -1;
+        }
     }
 
     @Override

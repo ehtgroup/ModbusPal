@@ -60,6 +60,7 @@ implements ModbusPalXML, ModbusConst
     private float noReplyRate = 0f;
     private ModbusPduProcessor pduProcessors[] = new ModbusPduProcessor[128];
     private InstanceCounter<ModbusPduProcessor> pduProcessorInstances = new InstanceCounter<ModbusPduProcessor>();
+    private ModbusPalProject ModbusPalProjectInst = null;
 
     private ModbusSlave()
     {
@@ -807,6 +808,12 @@ implements ModbusPalXML, ModbusConst
 
         Node tuningNode = XMLTools.getNode(nodes, XML_TUNING_TAG);
         loadTuning(tuningNode);
+        
+        ModbusPalProjectInst = mpp;
+        holdingRegisters.setModbusPalProjectInst(mpp);
+        inputRegisters.setModbusPalProjectInst(mpp);
+        coils.setModbusPalProjectInst(mpp);
+        discreteInputs.setModbusPalProjectInst(mpp);
     }
 
     /**
