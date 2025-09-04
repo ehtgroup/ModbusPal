@@ -26,7 +26,7 @@ public class Automation
 implements Runnable
 {
     /** default name of an automation */
-    public final static String DEFAULT_NAME = "no name"; 
+    public final static String DEFAULT_NAME = "no name";
     private ArrayList<Generator> generators = new ArrayList<Generator>();
     private double stepDelay = 1.0;
     private Thread thread = null;
@@ -110,7 +110,7 @@ implements Runnable
             stepDelay = newStepDelay;
             fireStepDelayHasChanged(stepDelay);
         }
-        
+
         Node loopNode = attributes.getNamedItem("loop");
         String loopValue = loopNode.getNodeValue();
         boolean newLoop = Boolean.parseBoolean(loopValue);
@@ -271,7 +271,7 @@ implements Runnable
                 {
                     throw new InstantiationException("Generator "+className+" cannot be instanciated");
                 }
-                
+
                 gen.load(node);
                 addGenerator(gen);
             }
@@ -281,7 +281,7 @@ implements Runnable
     /**
      * Saves the configuration of the automation, in XML format.
      * @param out the outpustream where the configuration is written
-     * @throws IOException 
+     * @throws IOException
      */
     public void save(OutputStream out)
     throws IOException
@@ -433,12 +433,12 @@ implements Runnable
         return currentValue;
     }
 
-    
+
     @Override
     public void run()
     {
         System.out.println("start automation thread");
-        
+
         // Get generators
         Generator genList[] = new Generator[generators.size()];
         genList = generators.toArray(genList);
@@ -518,9 +518,9 @@ implements Runnable
                 }
             }
         }
-        
+
         System.out.println("end of automation thread");
-        
+
         currentValue = 0.0;
         fireCurrentValueChanged(currentTime, currentValue);
 
@@ -558,7 +558,7 @@ implements Runnable
 
     /**
      * ModbusPal will call this function when the automation is removed from
-     * the project. It should not be called directly. 
+     * the project. It should not be called directly.
      */
     public final void disconnect()
     {
@@ -597,7 +597,7 @@ implements Runnable
     {
         if( automationExecutionListeners.addInstance(l)==true )
         {
-            System.out.println("AutomationExecutionListener added: "+l.hashCode());
+            // System.out.println("AutomationExecutionListener added: "+l.hashCode());
             return true;
         }
         return false;

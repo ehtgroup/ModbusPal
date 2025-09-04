@@ -10,31 +10,19 @@ ENV PATH=$PATH:$JYTHON_HOME/bin
 RUN apk update
 
 RUN set -eux && \
-    apk add --no-cache bash && \
-    apk add --no-cache zip && \
-    apk add --no-cache apache-ant && \
-    apk add --no-cache fontconfig ttf-dejavu
-
-
+    apk add --no-cache bash wget zip apache-ant fontconfig ttf-dejavu openjdk8 && \
+    ln -sf /bin/bash /bin/sh
 
 WORKDIR /usr/src
 
-RUN set -eux && \
-    apk add --no-cache wget && \
-     wget -cO ivy.zip https://dlcdn.apache.org//ant/ivy/2.5.1/apache-ivy-2.5.1-bin-with-deps.zip &&\
-     unzip ivy.zip && \
-     rm -f ivy.zip && \
-     apk del wget
+RUN wget -cO ivy.zip https://dlcdn.apache.org/ant/ivy/2.5.3/apache-ivy-2.5.3-bin-with-deps.zip && \
+    unzip ivy.zip && \
+    rm -f ivy.zip
 
 WORKDIR /usr/src/app
 COPY . .
 
-RUN ant compile -lib ../apache-ivy-2.5.1/ivy-2.5.1.jar
-RUN ant jar -lib ../apache-ivy-2.5.1/ivy-2.5.1.jar
-
+RUN ant compile -lib ../apache-ivy-2.5.3/ivy-2.5.3.jar
+RUN ant jar -lib ../apache-ivy-2.5.3/ivy-2.5.3.jar
 
 WORKDIR /usr/src/app/
-
-
-
-

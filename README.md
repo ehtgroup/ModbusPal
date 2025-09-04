@@ -23,4 +23,11 @@ with a project file to make modbuspal start all automations and start listening 
 ```
 java -jar <<pathtojar>>/ModbusPal.jar -loadFile=<<projectfile>> -hide
 ```
+
+Alternatively, if you want to leverage python scripts, you will need to ensure the dependencies are included as such:
+
+```
+java -cp "/usr/src/app/dist/ModbusPal.jar:/usr/src/app/lib/*" modbuspal.main.ModbusPalGui -loadFile=<<projectfile>> -hide
+
+```
 all slaves on headless mode will run without localhost.
