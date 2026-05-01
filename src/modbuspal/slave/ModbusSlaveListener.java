@@ -66,4 +66,13 @@ public interface ModbusSlaveListener
      */
     public void modbusSlaveErrorRatesChanged(ModbusSlave slave, float noReplyRate);
 
+    /**
+     * This method will be triggered to notify the listener that the forced
+     * "return exception" code for the specified modbus slave has been changed.
+     * @param slave the modbus slave
+     * @param exceptionCode the exception code (1-11) that will be returned for
+     * every request, or 0 if no exception is forced.
+     */
+    public void modbusSlaveReturnExceptionChanged(ModbusSlave slave, byte exceptionCode);
+
 }

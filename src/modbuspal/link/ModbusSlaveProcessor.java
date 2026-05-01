@@ -74,6 +74,22 @@ implements ModbusConst
             return 0;
         }
 
+        // process the forced "return exception" of the slave:
+        byte forcedException = slave.getReturnExceptionCode();
+        if( forcedException != 0 )
+        {
+            byte fc = buffer[offset+0];
+            int length = makeExceptionResponse(fc, forcedException, buffer, offset);
+            modbusPalProject.notifyExceptionResponse();
+            try {
+                Thread.sleep(slave.getReplyDelay());
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ModbusSlaveProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            ModbusPalRecorder.recordOutgoing(slaveID, buffer, offset, length);
+            return length;
+        }
+
         byte functionCode = buffer[offset+0];
         ModbusPduProcessor mspp = slave.getPduProcessor(functionCode);
         if( mspp == null )

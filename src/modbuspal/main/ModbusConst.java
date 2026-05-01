@@ -28,6 +28,12 @@ public interface ModbusConst
     public static final byte XC_ILLEGAL_DATA_ADDRESS = (byte)0x02;
     public static final byte XC_ILLEGAL_DATA_VALUE = (byte)0x03;
     public static final byte XC_SLAVE_DEVICE_FAILURE = (byte)0x04;
+    public static final byte XC_ACKNOWLEDGE = (byte)0x05;
+    public static final byte XC_SLAVE_DEVICE_BUSY = (byte)0x06;
+    public static final byte XC_NEGATIVE_ACKNOWLEDGE = (byte)0x07;
+    public static final byte XC_MEMORY_PARITY_ERROR = (byte)0x08;
+    public static final byte XC_GATEWAY_PATH_UNAVAILABLE = (byte)0x0A;
+    public static final byte XC_GATEWAY_TARGET_FAILED = (byte)0x0B;
 
     public static final int IMPLEMENTATION_MODBUS = 0;
     public static final int IMPLEMENTATION_JBUS = 1;
