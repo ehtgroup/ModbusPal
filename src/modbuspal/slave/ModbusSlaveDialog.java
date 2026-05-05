@@ -84,6 +84,7 @@ implements ModbusConst, ModbusSlaveListener
         // set tuning values.
         modbusSlaveReplyDelayChanged(s, s.getMinReplyDelay(), s.getMaxReplyDelay());
         modbusSlaveErrorRatesChanged(s, s.getNoReplyErrorRate() );
+        modbusSlaveReturnExceptionChanged(s, s.getReturnExceptionCode());
     }
 
     ModbusSlave getModbusSlave()
@@ -195,6 +196,9 @@ implements ModbusConst, ModbusSlaveListener
         jPanel5 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         noReplyRateSlider = new javax.swing.JSlider();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        returnExceptionComboBox = new javax.swing.JComboBox();
         jPanel1 = new javax.swing.JPanel();
         importButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
@@ -297,6 +301,38 @@ implements ModbusConst, ModbusSlaveListener
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel2.add(jPanel5, gridBagConstraints);
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Return Exception"));
+        jPanel6.setLayout(new java.awt.GridBagLayout());
+
+        jLabel6.setText("Code:");
+        jPanel6.add(jLabel6, new java.awt.GridBagConstraints());
+
+        returnExceptionComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
+            "None",
+            "01 - Illegal Function",
+            "02 - Illegal Data Address",
+            "03 - Illegal Data Value",
+            "04 - Slave Device Failure",
+            "05 - Acknowledge",
+            "06 - Slave Device Busy",
+            "07 - Negative Acknowledge",
+            "08 - Memory Parity Error",
+            "0A - Gateway Path Unavailable",
+            "0B - Gateway Target Failed To Respond"
+        }));
+        returnExceptionComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                returnExceptionComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel6.add(returnExceptionComboBox, new java.awt.GridBagConstraints());
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel2.add(jPanel6, gridBagConstraints);
 
         jScrollPane1.setViewportView(jPanel2);
 
@@ -478,11 +514,14 @@ implements ModbusConst, ModbusSlaveListener
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JComboBox returnExceptionComboBox;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField maxReplyDelayTextField;
@@ -591,6 +630,40 @@ implements ModbusConst, ModbusSlaveListener
     public void modbusSlaveErrorRatesChanged(ModbusSlave slave, float noReplyRate)
     {
         noReplyRateSlider.setValue( (int)(noReplyRate*100f) );
+    }
+
+    @Override
+    public void modbusSlaveReturnExceptionChanged(ModbusSlave slave, byte exceptionCode)
+    {
+        returnExceptionComboBox.setSelectedIndex( codeToComboIndex(exceptionCode) );
+    }
+
+    private void returnExceptionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        byte code = comboIndexToCode(returnExceptionComboBox.getSelectedIndex());
+        if( code != modbusSlave.getReturnExceptionCode() )
+        {
+            modbusSlave.setReturnExceptionCode(code);
+        }
+    }
+
+    private static byte comboIndexToCode(int idx)
+    {
+        // 0 = None, 1-8 map to codes 1-8, 9 -> 0x0A, 10 -> 0x0B
+        if( idx <= 0 ) return 0;
+        if( idx <= 8 ) return (byte) idx;
+        if( idx == 9 ) return (byte) 0x0A;
+        if( idx == 10 ) return (byte) 0x0B;
+        return 0;
+    }
+
+    private static int codeToComboIndex(byte code)
+    {
+        int c = code & 0xFF;
+        if( c == 0 ) return 0;
+        if( c >= 1 && c <= 8 ) return c;
+        if( c == 0x0A ) return 9;
+        if( c == 0x0B ) return 10;
+        return 0;
     }
 
 

@@ -345,5 +345,9 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
     public void modbusSlaveErrorRatesChanged(ModbusSlave slave, float noReplyRate) {
     }
 
+    @Override
+    public void modbusSlaveReturnExceptionChanged(ModbusSlave slave, byte exceptionCode) {
+    }
+
 
 }

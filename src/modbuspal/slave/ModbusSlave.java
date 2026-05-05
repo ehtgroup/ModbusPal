@@ -58,6 +58,7 @@ implements ModbusPalXML, ModbusConst
     private long minReplyDelay = 0L;
     private long maxReplyDelay = 0L;
     private float noReplyRate = 0f;
+    private byte returnExceptionCode = 0; // 0 = no forced exception
     private ModbusPduProcessor pduProcessors[] = new ModbusPduProcessor[128];
     private InstanceCounter<ModbusPduProcessor> pduProcessorInstances = new InstanceCounter<ModbusPduProcessor>();
     private ModbusPalProject ModbusPalProjectInst = null;
@@ -1040,6 +1041,15 @@ implements ModbusPalXML, ModbusConst
         tag.append(" />\r\n");
         out.write( tag.toString().getBytes() );
 
+        if( returnExceptionCode != 0 )
+        {
+            tag = new StringBuilder();
+            tag.append("<").append(XML_RETURN_EXCEPTION_TAG);
+            tag.append(" "+XML_RETURN_EXCEPTION_CODE_ATTRIBUTE+"=\"").append(String.valueOf(returnExceptionCode & 0xFF)).append("\"");
+            tag.append(" />\r\n");
+            out.write( tag.toString().getBytes() );
+        }
+
         tag = new StringBuilder();
         tag.append("</").append(XML_TUNING_TAG).append(">\r\n");
         out.write( tag.toString().getBytes() );
@@ -1083,12 +1093,37 @@ implements ModbusPalXML, ModbusConst
                 no_reply = Float.parseFloat(noReplyValue);
             }
             setErrorRates(no_reply);
-        }    }
+        }
+
+        // look for "return exception"
+        Node xcNode = XMLTools.getNode(list, XML_RETURN_EXCEPTION_TAG);
+        if(xcNode!=null)
+        {
+            String codeValue = XMLTools.getAttribute(XML_RETURN_EXCEPTION_CODE_ATTRIBUTE, xcNode);
+            if(codeValue!=null)
+            {
+                try
+                {
+                    int code = Integer.parseInt(codeValue);
+                    setReturnExceptionCode((byte)code);
+                }
+                catch(NumberFormatException ex)
+                {
+                    // ignore: leaves returnExceptionCode at 0
+                }
+            }
+        }
+        else
+        {
+            setReturnExceptionCode((byte)0);
+        }
+    }
 
     private void clearTuning()
     {
         setReplyDelay(0,0);
         setErrorRates(0f);
+        setReturnExceptionCode((byte)0);
     }
 
     /**
@@ -1143,6 +1178,46 @@ implements ModbusPalXML, ModbusConst
        {
            l.modbusSlaveErrorRatesChanged(this,noReplyRate);
        }
+    }
+
+    private void notifyReturnExceptionChanged()
+    {
+        for(ModbusSlaveListener l:listeners )
+        {
+            l.modbusSlaveReturnExceptionChanged(this, returnExceptionCode);
+        }
+    }
+
+    /**
+     * Sets the forced "return exception" code. When set to a non-zero value,
+     * every Modbus request to this slave will return that exception code as
+     * its response, bypassing normal PDU processing. Code 0 disables the
+     * forced exception.
+     * Valid codes: 0 (none), 1-8, 10 (0x0A), 11 (0x0B). Code 9 is not part
+     * of the Modbus spec.
+     * @param code exception code, or 0 to disable.
+     * @throws IllegalArgumentException if the code is not in the valid set.
+     */
+    public void setReturnExceptionCode(byte code)
+    throws IllegalArgumentException
+    {
+        int c = code & 0xFF;
+        boolean valid = (c == 0) || (c >= 1 && c <= 8) || (c == 0x0A) || (c == 0x0B);
+        if( !valid )
+        {
+            throw new IllegalArgumentException("invalid return exception code: " + c);
+        }
+        returnExceptionCode = code;
+        notifyReturnExceptionChanged();
+    }
+
+    /**
+     * Gets the forced "return exception" code. 0 means no forced exception.
+     * @return the forced exception code byte.
+     */
+    public byte getReturnExceptionCode()
+    {
+        return returnExceptionCode;
     }
     
     /**
